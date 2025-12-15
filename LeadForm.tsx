@@ -28,14 +28,40 @@ const LeadForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form Submitted:', formData);
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      // Reset form or redirect logic here
-    }, 2000);
-  };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const res = await fetch("/.netlify/functions/sendLead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        full_name: formData.fullName,
+        phone: formData.phone,
+        business_name: formData.businessName,
+        business_type: formData.businessType,
+        employees: formData.employeeCount,
+        location: formData.address,
+        problems: formData.problems,
+        budget: formData.budget,
+        expected_result: formData.expectations,
+        contact_time: formData.contactTime
+      })
+    });
+
+    if (!res.ok) {
+      throw new Error("Server error");
+    }
+
+    setIsSuccess(true);
+  } catch (error) {
+    alert("Xatolik yuz berdi. Iltimos qayta urinib ko‘ring.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   if (isSuccess) {
     return (
